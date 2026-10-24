@@ -34,3 +34,8 @@ def test_avisa_en_localidades_donde_la_alerta_falla():
 
 def test_las_limitaciones_dicen_para_que_no_se_usa():
     assert "No decide" in LIMITACIONES and "funcionarios" in LIMITACIONES
+
+
+def test_avisa_cuando_el_historial_no_cubre_la_fecha():
+    r = evaluar(**(VALIDA | {"fecha_radicacion": datetime(2026, 12, 1, 10)}))
+    assert any("historial" in a for a in r["avisos"])

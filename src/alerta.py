@@ -102,6 +102,10 @@ def evaluar(tipo_peticion: str, medio_recepcion: str, localidad: str, subtema: s
     alerta = p >= modelo["umbral"]
     avisos = [f"{g}: en 2025 la alerta detectó {r:.0%} de las vencidas." for g, r in grupos_debiles().items()
               if g in (localidad, medio_recepcion)]
+    ultima = historial()["fecha_respuesta"].max()
+    if fecha > ultima:
+        avisos.append(f"El historial de respuestas llega hasta el {ultima:%d/%m/%Y}. "
+                      "Las tasas recientes no reflejan lo ocurrido después de esa fecha.")
     return {
         "probabilidad": p,
         "alerta": bool(alerta),
