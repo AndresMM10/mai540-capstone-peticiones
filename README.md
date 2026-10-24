@@ -121,7 +121,7 @@ python auditoria.py                    # fuga, partición y subgrupos -> resulta
 pytest -v
 ```
 
-Son 18 pruebas en tres archivos. `tests/test_datos.py` comprueba el conteo de días hábiles con festivos, el límite exacto del término, los filtros de registros inválidos, que el modelo no vea columnas posteriores ni nombres de funcionarios y que la carga y las tasas recientes no usen información del futuro. `tests/test_modelo.py` comprueba que el modelo supera la línea base y el azar, que el resultado es estable entre pliegues y que la partición no mezcla fechas. `tests/test_alerta.py` comprueba la evaluación de una petición, el rechazo de entradas inválidas y el aviso por localidad. Se espera `18 passed`.
+Son 19 pruebas en tres archivos. `tests/test_datos.py` comprueba el conteo de días hábiles con festivos, el límite exacto del término, los filtros de registros inválidos, que el modelo no vea columnas posteriores ni nombres de funcionarios y que la carga y las tasas recientes no usen información del futuro. `tests/test_modelo.py` comprueba que el modelo supera la línea base y el azar, que el resultado es estable entre pliegues y que la partición no mezcla fechas. `tests/test_alerta.py` comprueba la evaluación de una petición, el rechazo de entradas inválidas, el aviso por localidad y el aviso cuando la fecha supera el historial. Se espera `19 passed`.
 
 Para que las pruebas corran antes de cada commit:
 
@@ -157,7 +157,7 @@ python instalar_hook.py
 ├── resultados/              tablas, gráfico de degradación y auditoría
 ├── evidencia/               capturas y salidas guardadas
 ├── src/                     datos.py, modelo.py, evaluacion.py, alerta.py
-└── tests/                   18 pruebas con pytest
+└── tests/                   19 pruebas con pytest
 ```
 
 ## Autor
