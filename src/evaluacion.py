@@ -44,12 +44,18 @@ def subgrupos_debiles(tabla: pd.DataFrame, recall_global: float, margen: float =
 
 
 def por_periodo(df: pd.DataFrame, p: np.ndarray, umbral: float, periodo: str = "anio") -> pd.DataFrame:
-    """Métricas del modelo en cada periodo, para ver si se degrada."""
+    """Métricas del modelo en cada periodo, para ver si se degrada.
+
+    La tasa de vencidas se calcula con todos los radicados del periodo. Las métricas del modelo,
+    solo con los que tienen predicción: en 2022 el primer bloque de la validación temporal solo
+    entrena y no recibe predicción fuera de pliegue.
+    """
     tabla = df.assign(_p=p)
-    tabla = tabla[tabla["_p"].notna()]
     filas = []
     for valor, g in tabla.groupby(periodo):
-        m = metricas(g[OBJETIVO], g["_p"], umbral)
-        filas.append({periodo: valor, "casos": len(g), "tasa_vencidas": g[OBJETIVO].mean(),
-                      "alertadas": float((g["_p"] >= umbral).mean()), **m})
+        con_p = g[g["_p"].notna()]
+        m = metricas(con_p[OBJETIVO], con_p["_p"], umbral)
+        filas.append({periodo: valor, "casos": len(g), "casos_con_prediccion": len(con_p),
+                      "tasa_vencidas": g[OBJETIVO].mean(),
+                      "alertadas": float((con_p["_p"] >= umbral).mean()), **m})
     return pd.DataFrame(filas)
