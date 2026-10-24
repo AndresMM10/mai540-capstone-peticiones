@@ -81,7 +81,7 @@ Errores por categoría en 2025 (`resultados/errores_por_categoria.csv`):
 
 ## Instalación
 
-Requiere Python 3.10 a 3.13 y git.
+Requiere Python 3.11 a 3.13 y git. scikit-learn 1.9.1 no tiene versión para Python 3.10.
 
 ```bash
 git clone https://github.com/AndresMM10/mai540-capstone-peticiones.git
