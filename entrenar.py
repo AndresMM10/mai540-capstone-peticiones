@@ -104,6 +104,7 @@ def main():
         "umbral_alerta": umbral,
         "fraccion_alerta_objetivo": FRACCION_ALERTA,
         "validacion_temporal": resumen,
+        "validacion_temporal_en_umbral": metricas(desarrollo[OBJETIVO][~np.isnan(fuera)], fuera[~np.isnan(fuera)], umbral),
         "prueba_2025": metricas(prueba[OBJETIVO], p_prueba, umbral)
         | {"casos": len(prueba), "tasa_vencidas": prueba[OBJETIVO].mean(), "alertadas": float((p_prueba >= umbral).mean())},
         "monitoreo_2026": metricas(posterior[OBJETIVO], p_post, umbral)
