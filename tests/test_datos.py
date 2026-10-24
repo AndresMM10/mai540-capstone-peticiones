@@ -62,3 +62,19 @@ def test_carga_no_mira_el_futuro():
     despues = carga_previa(mas, pd.Series(["A"] * 5))
     assert list(antes) == [0, 1, 2]
     assert list(despues[:3]) == [0, 1, 2]
+
+
+def test_tasa_reciente_solo_usa_respuestas_anteriores_a_la_radicacion():
+    from src.datos import tasa_reciente
+    historial = pd.DataFrame({
+        "fecha_respuesta": pd.to_datetime(["2024-03-01", "2024-03-02", "2024-03-10"]),
+        "localidad": ["A", "A", "A"],
+        "vencida": [1, 1, 1],
+    })
+    # El 5 de marzo solo se conocen dos respuestas, ambas tardías: (2 + 10 x 0,10) / (2 + 10) = 0,25.
+    # La respuesta del 10 de marzo todavía no existe y no debe contar.
+    tasa = tasa_reciente(pd.Series(pd.to_datetime(["2024-03-05"])), pd.Series(["A"]), historial, "localidad")
+    assert abs(tasa[0] - 0.25) < 1e-9
+    # Una localidad sin historial queda en la tasa previa del 10 %.
+    sin_historial = tasa_reciente(pd.Series(pd.to_datetime(["2024-03-05"])), pd.Series(["B"]), historial, "localidad")
+    assert abs(sin_historial[0] - 0.10) < 1e-9
