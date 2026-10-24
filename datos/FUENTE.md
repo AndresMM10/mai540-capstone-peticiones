@@ -34,5 +34,7 @@ Columnas del archivo preparado:
 | carga_7d | Peticiones radicadas en la misma localidad en los 7 días anteriores |
 | dias_calendario_plazo | Días de calendario entre la radicación y el vencimiento (festivos y fines de semana alargan el plazo) |
 | mes, dia_semana, hora | Momento de la radicación |
+| tasa_localidad_180d | Proporción de respuestas tardías de la localidad entre las emitidas en los 180 días anteriores, suavizada hacia 10 % |
+| tasa_tipo_180d | Lo mismo para el tipo de petición |
 | dias_habiles | Días hábiles que tardó la respuesta (solo para la etiqueta y el análisis) |
 | vencida | 1 si la respuesta salió después del término legal, 0 si salió a tiempo |
