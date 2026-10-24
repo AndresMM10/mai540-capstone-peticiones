@@ -1,0 +1,38 @@
+{
+  "modelo": "Regresión logística",
+  "hiperparametros": "C=1.0",
+  "umbral_alerta": 0.6409327177302253,
+  "fraccion_alerta_objetivo": 0.2,
+  "validacion_temporal": {
+    "ap_media": 0.17479489398967404,
+    "recall_alerta_media": 0.3565009793977166,
+    "f1_media": 0.23529925291822867,
+    "precision_media": 0.15140513104648773,
+    "recall_media": 0.5818676183126413,
+    "ap_desv": 0.05562187119957047,
+    "recall_alerta_desv": 0.017008947311802875,
+    "f1_desv": 0.04666610982159426,
+    "precision_desv": 0.04022360616445814,
+    "recall_desv": 0.06879577863077829
+  },
+  "prueba_2025": {
+    "ap": 0.08997978150956266,
+    "recall_alerta": 0.5700934579439252,
+    "f1": 0.109375,
+    "precision": 0.061068702290076333,
+    "recall": 0.5233644859813084,
+    "casos": 17206,
+    "tasa_vencidas": 0.018656282692084157,
+    "alertadas": 0.1598860862489829
+  },
+  "monitoreo_2026": {
+    "ap": 0.08421463366188016,
+    "recall_alerta": 0.3076923076923077,
+    "f1": 0.08778496087104458,
+    "precision": 0.04934965570007651,
+    "recall": 0.39692307692307693,
+    "casos": 8814,
+    "tasa_vencidas": 0.03687315634218289,
+    "alertadas": 0.2965736328568187
+  }
+}
