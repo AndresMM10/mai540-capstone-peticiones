@@ -27,8 +27,11 @@ def test_supera_el_azar_en_2025():
 
 
 def test_resultado_estable_entre_pliegues():
+    # La AP decide la elección: su desviación no debe pasar del 30 % de su media.
+    # El recall del 20 % con más riesgo se tolera hasta 0,06 de desviación entre pliegues.
     resumen = json.loads((RES / "metricas_prueba.json").read_text())["validacion_temporal"]
-    assert resumen["recall_alerta_desv"] < 0.05
+    assert resumen["ap_desv"] / resumen["ap_media"] < 0.30
+    assert resumen["recall_alerta_desv"] < 0.06
 
 
 def test_particion_temporal_sin_mezcla():

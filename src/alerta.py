@@ -8,7 +8,7 @@ from pathlib import Path
 import joblib
 import pandas as pd
 
-from .datos import INICIO_LEY_1755, VARIABLES, fecha_vencimiento
+from .datos import INICIO_LEY_1755, VARIABLES, cargar_preparado, fecha_vencimiento, tasa_reciente
 
 RAIZ = Path(__file__).resolve().parent.parent
 RUTA_MODELO = RAIZ / "modelos" / "modelo.joblib"
@@ -31,7 +31,7 @@ LIMITACIONES = (
     "ni sobre quien la presentó, y no reemplaza el control de términos del sistema de gestión documental. "
     "Se entrenó con radicados de la Secretaría Distrital de Gobierno y las alcaldías locales entre mayo de 2022 "
     "y diciembre de 2024. En 2025 la proporción de vencidas bajó a menos de una cuarta parte y el modelo "
-    "perdió precisión: de cada 100 alertas, unas 6 fueron peticiones que sí se vencieron. "
+    "perdió precisión: de cada 100 alertas, unas 8 fueron peticiones que sí se vencieron, y encontró 4 de cada 10 vencidas. "
     "En algunas localidades detecta muy pocas vencidas. No la uses para evaluar funcionarios ni dependencias."
 )
 
@@ -41,6 +41,20 @@ def cargar_modelo(ruta: Path = RUTA_MODELO) -> dict:
     if not Path(ruta).exists():
         raise FileNotFoundError(f"No encuentro {ruta}. Genera el modelo con: python entrenar.py")
     return joblib.load(ruta)
+
+
+@lru_cache(maxsize=1)
+def historial() -> pd.DataFrame:
+    """Respuestas ya emitidas que alimentan las tasas recientes. En una oficina real sería el
+    reporte del gestor documental. Aquí es el archivo preparado (hasta agosto de 2026)."""
+    return cargar_preparado()
+
+
+def tasas_recientes(localidad: str, tipo_peticion: str, fecha) -> tuple[float, float]:
+    h = historial()
+    f = pd.Series([pd.Timestamp(fecha)])
+    return (float(tasa_reciente(f, pd.Series([localidad]), h, "localidad")[0]),
+            float(tasa_reciente(f, pd.Series([tipo_peticion]), h, "tipo_peticion")[0]))
 
 
 @lru_cache(maxsize=1)
@@ -66,6 +80,7 @@ def evaluar(tipo_peticion: str, medio_recepcion: str, localidad: str, subtema: s
         raise ValueError("La carga de los últimos 7 días debe ser un número entero mayor o igual a cero.")
 
     plazo = PLAZOS[tipo_peticion]
+    tasa_loc, tasa_tipo = tasas_recientes(localidad, tipo_peticion, fecha)
     vence = fecha_vencimiento(fecha, plazo)
     fila = pd.DataFrame([{
         "tipo_peticion": tipo_peticion,
@@ -78,6 +93,8 @@ def evaluar(tipo_peticion: str, medio_recepcion: str, localidad: str, subtema: s
         "mes": fecha.month,
         "dia_semana": fecha.day_of_week,
         "hora": fecha.hour,
+        "tasa_localidad_180d": tasa_loc,
+        "tasa_tipo_180d": tasa_tipo,
     }])[VARIABLES]
 
     modelo = cargar_modelo()
@@ -85,11 +102,16 @@ def evaluar(tipo_peticion: str, medio_recepcion: str, localidad: str, subtema: s
     alerta = p >= modelo["umbral"]
     avisos = [f"{g}: en 2025 la alerta detectó {r:.0%} de las vencidas." for g, r in grupos_debiles().items()
               if g in (localidad, medio_recepcion)]
+    ultima = historial()["fecha_respuesta"].max()
+    if fecha > ultima:
+        avisos.append(f"El historial de respuestas llega hasta el {ultima:%d/%m/%Y}. "
+                      "Las tasas recientes no reflejan lo ocurrido después de esa fecha.")
     return {
         "probabilidad": p,
         "alerta": bool(alerta),
         "nivel": "Revisión prioritaria" if alerta else "Trámite normal",
         "plazo_habiles": plazo,
         "fecha_vencimiento": vence.date(),
+        "tasa_localidad_180d": tasa_loc,
         "avisos": avisos,
     }

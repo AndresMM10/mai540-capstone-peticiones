@@ -27,7 +27,10 @@ INICIO_LEY_1755 = pd.Timestamp("2022-05-18")
 
 # Columnas que existen en el momento de radicar. Son las únicas que el modelo puede ver.
 CATEGORICAS = ["tipo_peticion", "medio_recepcion", "localidad", "subtema"]
-NUMERICAS = ["plazo_habiles", "dias_calendario_plazo", "carga_7d", "mes", "dia_semana", "hora"]
+NUMERICAS = ["plazo_habiles", "dias_calendario_plazo", "carga_7d", "mes", "dia_semana", "hora",
+             "tasa_localidad_180d", "tasa_tipo_180d"]
+DIAS_HISTORIAL = 180
+PREVIA_CASOS, PREVIA_TASA = 10, 0.10  # suavizado: sin historial la tasa vale 10 %
 VARIABLES = CATEGORICAS + NUMERICAS
 OBJETIVO = "vencida"
 
@@ -95,6 +98,32 @@ def carga_previa(fechas: pd.Series, grupos: pd.Series, dias: int = 7) -> pd.Seri
     return resultado.reindex(fechas.index)
 
 
+def tasa_reciente(fechas: pd.Series, grupos: pd.Series, historial: pd.DataFrame, columna: str,
+                  dias: int = DIAS_HISTORIAL) -> np.ndarray:
+    """Proporción de respuestas tardías del mismo grupo entre las emitidas en los `dias` anteriores.
+
+    Solo cuenta respuestas con fecha estrictamente anterior a la radicación, que es lo que la
+    oficina ya sabe ese día. La tasa se suaviza hacia el 10 % con el peso de 10 respuestas, para
+    que un grupo con pocas respuestas no salte a 0 % o a 100 %.
+    `historial` necesita las columnas `fecha_respuesta`, `columna` y `vencida`.
+    """
+    fechas = pd.to_datetime(pd.Series(fechas)).reset_index(drop=True)
+    grupos = pd.Series(grupos).reset_index(drop=True)
+    resultado = np.full(len(fechas), PREVIA_TASA)
+    hist = historial[["fecha_respuesta", columna, OBJETIVO]].dropna(subset=["fecha_respuesta"])
+    ventana = np.timedelta64(dias, "D")
+    for grupo, posiciones in grupos.groupby(grupos).groups.items():
+        h = hist[hist[columna] == grupo].sort_values("fecha_respuesta")
+        f = h["fecha_respuesta"].values
+        acumulado = np.concatenate([[0], np.cumsum(h[OBJETIVO].values)])
+        t = fechas.loc[posiciones].values
+        hasta = np.searchsorted(f, t, side="left")
+        desde = np.searchsorted(f, t - ventana, side="left")
+        n, vencidas = hasta - desde, acumulado[hasta] - acumulado[desde]
+        resultado[np.asarray(posiciones)] = (vencidas + PREVIA_CASOS * PREVIA_TASA) / (n + PREVIA_CASOS)
+    return resultado
+
+
 def preparar(crudo: pd.DataFrame) -> pd.DataFrame:
     """Del archivo del portal al conjunto de modelado. Devuelve una fila por radicado cerrado.
 
@@ -138,6 +167,9 @@ def preparar(crudo: pd.DataFrame) -> pd.DataFrame:
     df["dia_semana"] = df["fecha_radicacion"].dt.day_of_week
     df["hora"] = df["fecha_radicacion"].dt.hour
     df["anio"] = df["fecha_radicacion"].dt.year
+    df = df.reset_index(drop=True)
+    df["tasa_localidad_180d"] = tasa_reciente(df["fecha_radicacion"], df["localidad"], df, "localidad")
+    df["tasa_tipo_180d"] = tasa_reciente(df["fecha_radicacion"], df["tipo_peticion"], df, "tipo_peticion")
     return df[columnas].sort_values("fecha_radicacion").reset_index(drop=True)
 
 

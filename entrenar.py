@@ -34,7 +34,7 @@ from src.modelo import (FRACCION_ALERTA, comparar, construir, elegir, metricas, 
 RAIZ = Path(__file__).resolve().parent
 RES = RAIZ / "resultados"
 RUTA_MODELO = RAIZ / "modelos" / "modelo.joblib"
-ELEGIDO_POR_DEFECTO = ("Regresión logística", "C=1.0")
+ELEGIDO_POR_DEFECTO = ("Regresión logística", "C=0.01")
 
 
 def coeficientes(pipe) -> pd.DataFrame:

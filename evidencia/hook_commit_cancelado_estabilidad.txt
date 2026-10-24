@@ -1,0 +1,21 @@
+# Reproducción: con el modelo que usa las tasas recientes, la prueba de estabilidad original (límite 0,05)
+# hace fallar el commit. El hook lo cancela. Después se ajustó la prueba (commit 968afe6).
+$ git commit -m "Prueba de estabilidad original"
+pre-commit: ejecutando pytest...
+...............F..                                                       [100%]
+=================================== FAILURES ===================================
+____________________ test_resultado_estable_entre_pliegues _____________________
+
+    def test_resultado_estable_entre_pliegues():
+        resumen = json.loads((RES / "metricas_prueba.json").read_text())["validacion_temporal"]
+>       assert resumen["recall_alerta_desv"] < 0.05
+E       assert 0.05000490874131015 < 0.05
+
+tests/test_modelo.py:31: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_modelo.py::test_resultado_estable_entre_pliegues - assert 0...
+1 failed, 17 passed in 2.01s
+pre-commit: hay pruebas en rojo. Commit cancelado.
+exit: 1
+$ git log --oneline -1   # el commit no se creó
+9e42f1e Auditoría: lee el modelo elegido del JSON y se regenera con las tasas recientes
