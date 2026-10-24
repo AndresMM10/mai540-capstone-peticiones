@@ -1,0 +1,45 @@
+# Instalación en carpeta limpia siguiendo solo el README (2026-10-23 21:31 -05)
+$ git clone -b funcionalidad/historial-reciente https://github.com/AndresMM10/mai540-capstone-peticiones.git
+$ git log --oneline -1
+0a4805c README: 19 pruebas
+$ python -m venv .venv && source .venv/bin/activate
+Python 3.13.17
+$ pip install -r requirements.txt
+gradio            6.30.0
+holidays          0.107
+joblib            1.6.0
+numpy             2.5.4
+pandas            3.1.0
+pytest            9.1.1
+scikit-learn      1.9.1
+$ pytest -v
+============================= test session starts ==============================
+platform linux -- Python 3.13.17, pytest-9.1.1, pluggy-1.7.0 -- /tmp/claude-0/-home-claude/c90f14e6-2b25-5338-97ca-65f2a52ed08b/scratchpad/limpio2/mai540-capstone-peticiones/.venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /tmp/claude-0/-home-claude/c90f14e6-2b25-5338-97ca-65f2a52ed08b/scratchpad/limpio2/mai540-capstone-peticiones
+plugins: anyio-4.15.1
+collecting ... collected 19 items
+
+tests/test_alerta.py::test_evaluar_devuelve_probabilidad_y_vencimiento PASSED [  5%]
+tests/test_alerta.py::test_rechaza_entrada_invalida[cambio0] PASSED      [ 10%]
+tests/test_alerta.py::test_rechaza_entrada_invalida[cambio1] PASSED      [ 15%]
+tests/test_alerta.py::test_rechaza_entrada_invalida[cambio2] PASSED      [ 21%]
+tests/test_alerta.py::test_avisa_en_localidades_donde_la_alerta_falla PASSED [ 26%]
+tests/test_alerta.py::test_las_limitaciones_dicen_para_que_no_se_usa PASSED [ 31%]
+tests/test_alerta.py::test_avisa_cuando_el_historial_no_cubre_la_fecha PASSED [ 36%]
+tests/test_datos.py::test_dias_habiles_excluye_fines_de_semana_y_festivos PASSED [ 42%]
+tests/test_datos.py::test_fecha_vencimiento_salta_festivos_de_fin_de_anio PASSED [ 47%]
+tests/test_datos.py::test_respuesta_el_ultimo_dia_no_esta_vencida PASSED [ 52%]
+tests/test_datos.py::test_descarta_registros_invalidos_y_anteriores_a_la_ley_2207 PASSED [ 57%]
+tests/test_datos.py::test_el_modelo_no_ve_columnas_posteriores_ni_datos_personales PASSED [ 63%]
+tests/test_datos.py::test_carga_no_mira_el_futuro PASSED                 [ 68%]
+tests/test_datos.py::test_tasa_reciente_solo_usa_respuestas_anteriores_a_la_radicacion PASSED [ 73%]
+tests/test_modelo.py::test_supera_la_linea_base_en_validacion_temporal PASSED [ 78%]
+tests/test_modelo.py::test_supera_el_azar_en_2025 PASSED                 [ 84%]
+tests/test_modelo.py::test_resultado_estable_entre_pliegues PASSED       [ 89%]
+tests/test_modelo.py::test_particion_temporal_sin_mezcla PASSED          [ 94%]
+tests/test_modelo.py::test_recall_en_alerta_de_un_modelo_constante_es_el_azar PASSED [100%]
+
+============================== 19 passed in 2.07s ==============================
+$ python -c "import app"
+Interfaz cargada. Umbral: 0.581
