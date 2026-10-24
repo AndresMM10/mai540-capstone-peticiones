@@ -1,0 +1,3 @@
+* text=auto
+hooks/pre-commit text eol=lf
+*.csv -text

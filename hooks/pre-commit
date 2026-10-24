@@ -1,0 +1,13 @@
+#!/bin/sh
+# Ejecuta las pruebas antes de cada commit. Si alguna falla, el commit se cancela.
+echo "pre-commit: ejecutando pytest..."
+if [ -x ".venv/Scripts/python.exe" ]; then PY=".venv/Scripts/python.exe";
+elif [ -x ".venv/bin/python" ]; then PY=".venv/bin/python";
+else PY="python"; fi
+"$PY" -m pytest -q
+estado=$?
+if [ $estado -ne 0 ]; then
+  echo "pre-commit: hay pruebas en rojo. Commit cancelado."
+  exit 1
+fi
+echo "pre-commit: pruebas en verde. Commit aceptado."
