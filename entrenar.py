@@ -50,14 +50,17 @@ def grafico_degradacion(tabla: pd.DataFrame, ruta: Path):
     anios = tabla["anio"].astype(str)
     ejes[0].bar(anios, tabla["tasa_vencidas"] * 100, color="#4a6fa5")
     ejes[0].set_title("Peticiones respondidas fuera de término (%)")
-    ejes[1].plot(anios, tabla["recall_alerta"] * 100, marker="o", color="#4a6fa5", label="Vencidas en el 20 % alertado")
-    ejes[1].plot(anios, tabla["precision"] * 100, marker="s", color="#c0504d", label="Precisión de la alerta")
+    etiquetas = [f"{a}*" if a in (2022, 2026) else str(a) for a in tabla["anio"]]
+    ejes[1].plot(etiquetas, tabla["recall"] * 100, marker="o", color="#4a6fa5", label="Vencidas detectadas (recall)")
+    ejes[1].plot(etiquetas, tabla["precision"] * 100, marker="s", color="#c0504d", label="Alertas correctas (precisión)")
     ejes[1].set_ylim(0, 100)
-    ejes[1].set_title("Desempeño del modelo por año (%)")
+    ejes[1].set_title("Alerta con el mismo umbral, por año (%)")
     ejes[1].legend(fontsize=8)
     for eje in ejes:
         eje.spines[["top", "right"]].set_visible(False)
-    fig.tight_layout()
+    fig.text(0.5, 0.01, "*2022: solo radicados con predicción fuera de pliegue.   *2026: año abierto, muchos radicados siguen en gestión.",
+             ha="center", fontsize=8, color="#555555")
+    fig.tight_layout(rect=(0, 0.05, 1, 1))
     fig.savefig(ruta, dpi=150)
     plt.close(fig)
 
