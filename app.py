@@ -41,6 +41,7 @@ def responder(tipo, medio, localidad, subtema, fecha_texto, carga):
         f"(umbral de revisión prioritaria: {MODELO['umbral']:.0%})",
         "",
         f"Término legal: {r['plazo_habiles']} días hábiles. Vence el **{r['fecha_vencimiento']:%d/%m/%Y}**.",
+        f"Respuestas tardías de esta localidad en los 180 días anteriores: {r['tasa_localidad_180d']:.1%}",
     ]
     if r["avisos"]:
         lineas += ["", "Cuidado con esta predicción:"] + [f"- {a}" for a in r["avisos"]]
