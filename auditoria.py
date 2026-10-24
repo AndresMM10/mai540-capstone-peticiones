@@ -87,6 +87,12 @@ def revisar_particion(df: pd.DataFrame, desarrollo: pd.DataFrame, prueba: pd.Dat
     lineas.append("")
     ganador_aleatorio = cruce.loc[cruce["ap_media_aleatoria"].idxmax()]
     lineas.append(f"- Con validación aleatoria ganaría {ganador_aleatorio.modelo} ({ganador_aleatorio.hiperparametros}).")
+    # Qué habría pasado en 2025 con ese modelo y con el elegido, entrenados con todo el desarrollo.
+    from src.modelo import construir
+    for modelo, hiper in [(ganador_aleatorio.modelo, ganador_aleatorio.hiperparametros), ("Regresión logística", "C=1.0")]:
+        pipe = construir(modelo, hiper).fit(desarrollo[VARIABLES], desarrollo[OBJETIVO])
+        ap = average_precision_score(prueba[OBJETIVO], pipe.predict_proba(prueba[VARIABLES])[:, 1])
+        lineas.append(f"- AP en 2025 de {modelo} ({hiper}) entrenado con 2022-2024: {ap:.3f}. Revisar al azar daría {prueba[OBJETIVO].mean():.3f}.")
     return ok, lineas
 
 

@@ -28,6 +28,8 @@ Generado por `python auditoria.py`.
 | Gradient boosting | max_depth=6 | 0.277 | 0.158 | +0.119 |
 
 - Con validación aleatoria ganaría Random Forest (min_samples_leaf=5).
+- AP en 2025 de Random Forest (min_samples_leaf=5) entrenado con 2022-2024: 0.035. Revisar al azar daría 0.019.
+- AP en 2025 de Regresión logística (C=1.0) entrenado con 2022-2024: 0.090. Revisar al azar daría 0.019.
 
 ## Subgrupos
 
