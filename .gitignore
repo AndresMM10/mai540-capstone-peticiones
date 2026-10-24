@@ -1,0 +1,10 @@
+# El CSV original trae nombres de funcionarios en USUARIO_ACTUAL. No se sube.
+datos/pqrs_sdg_2022_2026.csv
+.venv/
+venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+.ipynb_checkpoints/
+flagged/
+.gradio/
