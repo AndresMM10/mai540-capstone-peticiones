@@ -1,0 +1,28 @@
+$ git log --oneline -1
+61dd532 Agrega auditoría de fuga, partición y subgrupos con su reporte
+# Cambio a propósito: la respuesta el último día cuenta como vencida (> pasa a >=)
+ src/datos.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+$ git commit -am "Prueba: cambia el límite del término"
+pre-commit: ejecutando pytest...
+........F........                                                        [100%]
+=================================== FAILURES ===================================
+_________________ test_respuesta_el_ultimo_dia_no_esta_vencida _________________
+
+    def test_respuesta_el_ultimo_dia_no_esta_vencida():
+        # 15 días hábiles exactos no es vencimiento. 16 sí.
+        a_tiempo = preparar(_crudo("01/07/2024 09:00:00", "22/07/2024 16:00:00"))
+        tarde = preparar(_crudo("01/07/2024 09:00:00", "23/07/2024 16:00:00"))
+>       assert a_tiempo.loc[0, "dias_habiles"] == 15 and a_tiempo.loc[0, "vencida"] == 0
+E       assert (np.int64(15) == 15 and np.int64(1) == 0)
+
+tests/test_datos.py:31: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_datos.py::test_respuesta_el_ultimo_dia_no_esta_vencida - as...
+1 failed, 16 passed in 1.83s
+pre-commit: hay pruebas en rojo. Commit cancelado.
+exit: 1
+$ git log --oneline -1   # el commit no se creó
+61dd532 Agrega auditoría de fuga, partición y subgrupos con su reporte
+$ git status --short   # cambio revertido
+?? .venv
