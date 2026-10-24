@@ -121,8 +121,8 @@ def main():
     print(debiles[["variable", "grupo", "casos", "vencidas", "recall"]].round(3).to_string(index=False))
 
     p_todo = np.concatenate([fuera, p_prueba, p_post])
-    años = pd.concat([desarrollo, prueba, posterior])
-    degr = por_periodo(años, p_todo, umbral)
+    periodos = pd.concat([desarrollo, prueba, posterior])
+    degr = por_periodo(periodos, p_todo, umbral)
     degr.to_csv(RES / "degradacion.csv", index=False)
     grafico_degradacion(degr, RES / "degradacion.png")
     print("\nPor año (2022-2024 fuera de pliegue, 2025 prueba, 2026 monitoreo):")
