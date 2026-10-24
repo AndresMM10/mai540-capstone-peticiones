@@ -1,0 +1,7 @@
+$ git commit -m "Auditoría: mide en 2025 el modelo que ganaría con validación aleatoria"
+pre-commit: ejecutando pytest...
+.................                                                        [100%]
+17 passed in 1.70s
+pre-commit: pruebas en verde. Commit aceptado.
+[funcionalidad/pruebas-auditoria 2a8c635] Auditoría: mide en 2025 el modelo que ganaría con validación aleatoria
+ 2 files changed, 8 insertions(+)

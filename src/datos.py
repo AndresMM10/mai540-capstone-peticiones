@@ -104,6 +104,7 @@ def preparar(crudo: pd.DataFrame) -> pd.DataFrame:
     3. Solo radicados con fecha de respuesta. Los que siguen en gestión no tienen etiqueta.
     4. Se descartan respuestas con fecha anterior a la radicación (error de registro).
     """
+    crudo = crudo.reset_index(drop=True)
     df = pd.DataFrame({
         "radicado": crudo["RADICADO"].str.strip(),
         "fecha_radicacion": pd.to_datetime(crudo["RADI_FECH_RADI"], format="%d/%m/%Y %H:%M:%S", errors="coerce"),
@@ -124,6 +125,9 @@ def preparar(crudo: pd.DataFrame) -> pd.DataFrame:
     df = df.assign(dias_habiles=dias_habiles(df["fecha_radicacion"], df["fecha_respuesta"]))
     df = df[df["dias_habiles"] >= 0].copy()
 
+    columnas = ["radicado", "fecha_radicacion", "fecha_respuesta", "anio", *VARIABLES, "dias_habiles", OBJETIVO]
+    if df.empty:
+        return pd.DataFrame(columns=columnas)
     df["plazo_habiles"] = df["plazo_habiles"].astype(int)
     df[OBJETIVO] = (df["dias_habiles"] > df["plazo_habiles"]).astype(int)
     df["dias_calendario_plazo"] = [
@@ -131,10 +135,9 @@ def preparar(crudo: pd.DataFrame) -> pd.DataFrame:
         for f, p in zip(df["fecha_radicacion"], df["plazo_habiles"])
     ]
     df["mes"] = df["fecha_radicacion"].dt.month
-    df["dia_semana"] = df["fecha_radicacion"].dt.dayofweek
+    df["dia_semana"] = df["fecha_radicacion"].dt.day_of_week
     df["hora"] = df["fecha_radicacion"].dt.hour
     df["anio"] = df["fecha_radicacion"].dt.year
-    columnas = ["radicado", "fecha_radicacion", "fecha_respuesta", "anio", *VARIABLES, "dias_habiles", OBJETIVO]
     return df[columnas].sort_values("fecha_radicacion").reset_index(drop=True)
 
 
