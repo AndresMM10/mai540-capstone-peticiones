@@ -1,6 +1,6 @@
 # Alerta de vencimiento de derechos de petición
 
-Estima, en el momento de radicar un derecho de petición en la Secretaría Distrital de Gobierno de Bogotá o en una alcaldía local, la probabilidad de que la respuesta salga después del término legal. Sirve para que la oficina de atención a la ciudadanía revise primero las peticiones con más riesgo.
+Al momento de radicar un derecho de petición en la Secretaría Distrital de Gobierno de Bogotá o en una alcaldía local, la probabilidad de que la respuesta salga después del término legal. Sirve para que la oficina de atención a la ciudadanía revise primero las peticiones con más riesgo.
 
 Proyecto capstone de MAI 540 Machine Learning, Atlantis University. Autor: Andrés Moreno.
 
